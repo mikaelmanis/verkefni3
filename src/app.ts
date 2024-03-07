@@ -6,10 +6,11 @@ dotenv.config()
 const app = express();
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Kúkaklumpur');
+  res.send('Boltaland');
 })
-app.use(router);
 app.use(express.json())
+app.use(router);
+
 
 const port = 3000;
 

@@ -1,6 +1,6 @@
 import pg from 'pg';
 import { Team, Game} from '../types.js';
-import { gameMapper, gamesMapper, teamsMapper } from './mapper.js';
+import { gameMapper, gamesMapper, teamMapper, teamsMapper } from './mapper.js';
 
 
 let savedPool: pg.Pool | undefined;
@@ -63,6 +63,59 @@ export async function getTeams(): Promise<Array<Team> | null> {
   return teamsMapper(result.rows);
 }
 
+export async function getTeamFromSlug(slug: string): Promise<Team | null>  {
+  const result = await query('SELECT * FROM teams WHERE slug = $1', [slug]);
+
+  if (!result) {
+    return null;
+  }
+
+  return teamMapper(result.rows[0]);
+}
+
+export async function createNewTeam(
+  name: string,
+  slug: string,
+  description: string
+  )
+  : Promise<Team | null> {
+
+    const result = await query('INSERT INTO teams (name, slug, description) values ($1, $2, $3) RETURNING *',
+    [name, slug, description])
+
+    if (!result) {
+      return null;
+    }
+
+    return teamMapper(result.rows[0]);
+}
+
+export async function updateTeamBySlug(
+  name: string,
+  slug: string,
+  description: string
+  )
+  : Promise<Team | null> {
+
+    const result = await query('UPDATE teams set name = $1, description = $2 WHERE slug = $3 RETURNING *',
+    [name, description, slug])
+
+    if (!result) {
+      return null;
+    }
+
+    return teamMapper(result.rows[0]);
+}
+
+export async function deleteTeamFromSlug(slug: string): Promise<Game | null> {
+  const result = await query('DELETE FROM teams WHERE slug = $1 RETURNING *', [slug])
+  if (!result) {
+    return null;
+  }
+
+  return gameMapper(result.rows[0]);
+}
+
 export async function getGames(): Promise<Array<Game> | null>  {
   const result = await query('SELECT * FROM games');
 
@@ -80,7 +133,7 @@ export async function getGameFromId(id: number): Promise<Game | null>  {
     return null;
   }
 
-  return gameMapper(result.rows);
+  return gameMapper(result.rows[0]);
 }
 
 export async function createNewGame(
@@ -91,11 +144,42 @@ export async function createNewGame(
   away_score: number)
   : Promise<Game | null> {
 
-    const result = await query('INSERT INTO GAMES (date, home, away, home_score, away_score) values ($1, $2, $3, $4, $5)')
+    const result = await query('INSERT INTO games (date, home, away, home_score, away_score) values ($1, $2, $3, $4, $5) RETURNING *',
+    [date, home, away, home_score, away_score])
 
     if (!result) {
       return null;
     }
 
-    return gameMapper(result.rows);
+    return gameMapper(result.rows[0]);
+}
+
+export async function updateGameById(
+  id: number,
+  date: string,
+  home: string,
+  away: string,
+  home_score: number,
+  away_score: number)
+  : Promise<Game | null> {
+
+    const result = await query('UPDATE games SET date = $1, home = $2, away = $3, home_score = $4, away_score = $5 WHERE id = $6 RETURNING *',
+    [date, home, away, home_score, away_score, id])
+
+    if (!result) {
+      return null;
+    }
+
+    return gameMapper(result.rows[0]);
+
+}
+
+export async function deleteGameFromId(id: number): Promise<Game | null> {
+  const result = await query('DELETE FROM games WHERE id = $1 RETURNING *', [id])
+
+  if (!result) {
+    return null;
+  }
+
+  return gameMapper(result.rows[0]);
 }

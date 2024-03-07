@@ -33,16 +33,16 @@ export async function error() {
 // Teams
 router.get('/', index);
 router.get('/teams', listTeams);
-/*router.post('/teams', createTeam);
+router.post('/teams', createTeam);
 router.get('/teams/:slug', getTeam);
 router.patch('/teams/:slug', updateTeam);
-router.delete('/teams/:slug', deleteTeam);*/
+router.delete('/teams/:slug', deleteTeam);
 
 
 
 // Games
 router.get('/games', listGames);
-/*router.post('/games', createGame);
+router.post('/games', createGame);
 router.get('/games/:id', getGame);
 router.patch('/games/:id', updateGame);
-router.delete('/games/:id', deleteGame);*/
+router.delete('/games/:id', deleteGame);
